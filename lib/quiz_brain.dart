@@ -40,6 +40,14 @@ class QuizBrain {
     }
   }
 
+  bool isFinished() {
+    return _questionIndex == _questionsBank.length - 1;
+  }
+
+  void resetIndex() {
+    _questionIndex = 0;
+  }
+
   String getQuestionText() {
     return _questionsBank[_questionIndex].questionText;
   }
