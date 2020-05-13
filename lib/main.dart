@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 QuizBrain quizBrain = new QuizBrain();
 
@@ -30,25 +31,55 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   List<Icon> scoreKeeper = [];
 
+  void _resetQuiz() {
+    setState(() {
+      Navigator.pop(context);
+      quizBrain.resetIndex();
+      scoreKeeper = [];
+    });
+  }
+
+  _showResetAlert(context) {
+    Alert(
+      context: context,
+      title: "End of the road!",
+      desc: "Wanna start over again?",
+      buttons: [
+        DialogButton(
+          child: Text(
+            "Restart",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () => _resetQuiz(),
+          width: 120,
+        )
+      ],
+    ).show();
+  }
+
   void checkAnswer(bool userValue) {
     setState(() {
-      if (quizBrain.getQuestionAnswer() == userValue) {
-        scoreKeeper.add(
-          Icon(
-            Icons.check,
-            color: Colors.green,
-          ),
-        );
-      } else {
-        scoreKeeper.add(
-          Icon(
-            Icons.close,
-            color: Colors.red,
-          ),
-        );
-      }
+      if (!quizBrain.isFinished()) {
+        if (quizBrain.getQuestionAnswer() == userValue) {
+          scoreKeeper.add(
+            Icon(
+              Icons.check,
+              color: Colors.green,
+            ),
+          );
+        } else {
+          scoreKeeper.add(
+            Icon(
+              Icons.close,
+              color: Colors.red,
+            ),
+          );
+        }
 
-      quizBrain.updateIndex();
+        quizBrain.updateIndex();
+      } else {
+        _showResetAlert(context);
+      }
     });
   }
 
@@ -112,8 +143,8 @@ class _QuizPageState extends State<QuizPage> {
           ),
         ),
         Expanded(
-          child: Row(children: scoreKeeper),
-        )
+          child: Wrap(children: scoreKeeper),
+        ),
       ],
     );
   }
